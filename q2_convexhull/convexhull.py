@@ -9,6 +9,7 @@
 import pandas as pd
 from scipy.spatial import ConvexHull
 from skbio import OrdinationResults
+from qiime2 import Metadata
 from q2_convexhull._defaults import (DEFAULT_N_DIMENSIONS)
 from warnings import warn
 
@@ -29,7 +30,7 @@ def validate(metadata, pcoa, individual_id_column):
     return meta
 
 
-def convex_hull(metadata: pd.DataFrame,
+def convex_hull(metadata: Metadata,
                 pcoa: OrdinationResults,
                 individual_id_column: str,
                 number_of_dimensions: int = DEFAULT_N_DIMENSIONS) \
@@ -82,6 +83,9 @@ def convex_hull(metadata: pd.DataFrame,
                                  pcoa.long_method_name,
                                  pcoa.eigvals[:3],
                                  pcoa.samples[pcoa.samples.columns[:3]])
+
+    if isinstance(metadata, Metadata):
+        metadata = metadata.to_dataframe()
     meta = validate(metadata, pcoa, individual_id_column)
     hulls = []
     for person, group in meta.groupby(individual_id_column):
